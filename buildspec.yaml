@@ -15,12 +15,11 @@ phases:
     - echo Build completed on `date`
     - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
     - echo $BRANCH_NAME
-    - bash -c '
-        echo "This is a Bash script";
-        echo "The current directory is $PWD";
-        echo "The current date is $(date)";
-        if [[ $BRANCH_NAME =~ ^Release.* ]]; then
-            echo "This is a Release Branch"
-        else
-            echo "This is a NON Release Branch"
-        fi'
+    - |
+      #!/bin/bash
+      bash --version
+      if [[ $BRANCH_NAME =~ ^Release.* ]]; then
+          echo "This is a Release Branch"
+      else
+          echo "This is a NON Release Branch"
+      fi
