@@ -14,7 +14,7 @@ phases:
     commands:
     - echo Build completed on `date`
     - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
-    - echo $BRANCH_NAME
+    - echo $BRANCH_NAME=Release-1
     - |
       #!/bin/bash
       bash --version
