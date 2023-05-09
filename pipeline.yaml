@@ -1,24 +1,80 @@
-version: 0.2
-phases:
-  pre_build:
-    commands:
-    - echo "Logging in to Amazon PROD ECR...."
-  build:
-    commands:
-    - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-    - COMMIT_SHA=$(git rev-parse --short HEAD)
-    - BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD | sed "s/\\//-/g" | tr '[:upper:]' '[:lower:]')
-    - TIMESTAMP="$(date +%s)"
-    - IMAGE_TAG=${BRANCH_NAME}-${COMMIT_SHA}-${TIMESTAMP}
-  post_build:
-    commands:
-    - echo Build completed on `date`
-    - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
-    - echo $BRANCH_NAME
-    - |
-      #!/bin/bash
-      if [[ $BRANCH_NAME =~ ^Release.* ]]; then
-          echo "This is a Release Branch"
-      else
-          echo "This is a NON Release Branch"
-      fi
+---
+version: 1
+metadata:
+  pipelineName: my-pipeline
+stages:
+  - name: Source
+    actions:
+      - name: SourceAction
+        actionTypeId:
+          category: Source
+          owner: AWS
+          provider: CodeCommit
+          version: '1'
+        configuration:
+          RepositoryName: my-repo
+          BranchName: !Ref BranchName
+        outputArtifacts:
+          - name: SourceOutput
+  - name: Build
+    actions:
+      - name: BuildAction
+        actionTypeId:
+          category: Build
+          owner: AWS
+          provider: CodeBuild
+          version: '1'
+        configuration:
+          ProjectName: my-build-project
+        inputArtifacts:
+          - name: SourceOutput
+        outputArtifacts:
+          - name: BuildOutput
+  - name: Deploy
+    actions:
+      - name: DeployAction
+        actionTypeId:
+          category: Deploy
+          owner: AWS
+          provider: ElasticBeanstalk
+          version: '1'
+        configuration:
+          ApplicationName: my-eb-app
+          EnvironmentName: my-eb-environment
+        inputArtifacts:
+          - name: BuildOutput
+  - name: Test
+    actions:
+      - name: TestAction
+        actionTypeId:
+          category: Test
+          owner: AWS
+          provider: CodeBuild
+          version: '1'
+        configuration:
+          ProjectName: my-test-project
+        inputArtifacts:
+          - name: BuildOutput
+  - name: Approval
+    actions:
+      - name: ApprovalAction
+        actionTypeId:
+          category: Approval
+          owner: AWS
+          provider: Manual
+          version: '1'
+        inputArtifacts:
+          - name: TestOutput
+  - name: Publish
+    actions:
+      - name: PublishAction
+        actionTypeId:
+          category: Invoke
+          owner: AWS
+          provider: Lambda
+          version: '1'
+        configuration:
+          FunctionName: my-publish-function
+          UserParameters: !Sub '{"branchName": "${BranchName}"}'
+        inputArtifacts:
+          - name: TestOutput
