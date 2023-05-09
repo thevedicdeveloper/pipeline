@@ -14,11 +14,11 @@ phases:
     commands:
     - echo Build completed on `date`
     - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
-    - echo $BRANCH_NAME=Release-1
     - |
       #!/bin/bash
       bash --version
-      if [[ $BRANCH_NAME =~ ^Release.* ]]; then
+      BRANCH_NAME=Release-1
+      if [[ $BRANCH_NAME =~ Release.* ]]; then
           echo "This is a Release Branch"
       else
           echo "This is a NON Release Branch"
