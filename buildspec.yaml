@@ -1,8 +1,12 @@
-- export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
-- |
-  #!/bin/bash
-  if [[ "$BRANCH_NAME" =~ ^Release- ]]; then
-    echo "This is a Release Branch"
-  else
-    echo "This is NOT a Release Branch"
-  fi
+version: 0.2
+phases:
+  build:
+    commands:
+      - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
+      - |
+        #!/bin/bash
+        if [[ "$BRANCH_NAME" =~ ^Release- ]]; then
+          echo "This is a Release Branch"
+        else
+          echo "This is NOT a Release Branch"
+        fi
