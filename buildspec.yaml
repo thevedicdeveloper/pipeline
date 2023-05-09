@@ -1,11 +1,24 @@
-build:
-  commands:
-    - echo "The value of CODEBUILD_SOURCE_VERSION is: $CODEBUILD_SOURCE_VERSION"
+version: 0.2
+phases:
+  pre_build:
+    commands:
+    - echo "Logging in to Amazon PROD ECR...."
+  build:
+    commands:
+    - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    - COMMIT_SHA=$(git rev-parse --short HEAD)
+    - BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD | sed "s/\\//-/g" | tr '[:upper:]' '[:lower:]')
+    - TIMESTAMP="$(date +%s)"
+    - IMAGE_TAG=${BRANCH_NAME}-${COMMIT_SHA}-${TIMESTAMP}
+  post_build:
+    commands:
+    - echo Build completed on `date`
     - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
+    - echo $BRANCH_NAME
     - |
       #!/bin/bash
-      if [ "$BRANCH_NAME" = "master" ]; then
-        echo "This is the master branch"
+      if [[ $BRANCH_NAME =~ ^Release.* ]]; then
+          echo "This is a Release Branch"
       else
-        echo "This is NOT the master branch"
+          echo "This is a NON Release Branch"
       fi
