@@ -18,7 +18,7 @@ phases:
       #!/bin/bash
       BRANCH_NAME='Release-1'
       RELEASE_STRING='^Release'
-      if [ "$BRANCH_NAME" = "$RELEASE_STRING" ]; then
+      if [ "$BRANCH_NAME" =~ "$RELEASE_STRING" ]; then
         echo "This is a Release Branch"
       else
         echo "This is a NON Release Branch"
