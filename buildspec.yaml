@@ -1,12 +1,11 @@
-version: 0.2
-phases:
-  build:
-    commands:
-      - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
-      - |
-        #!/bin/bash
-        if [[ "$BRANCH_NAME" =~ ^Release- ]]; then
-          echo "This is a Release Branch"
-        else
-          echo "This is NOT a Release Branch"
-        fi
+build:
+  commands:
+    - echo "The value of CODEBUILD_SOURCE_VERSION is: $CODEBUILD_SOURCE_VERSION"
+    - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
+    - |
+      #!/bin/bash
+      if [ "$BRANCH_NAME" = "master" ]; then
+        echo "This is the master branch"
+      else
+        echo "This is NOT the master branch"
+      fi
