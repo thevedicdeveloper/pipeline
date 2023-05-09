@@ -19,6 +19,9 @@ phases:
       bash --version
       BRANCH_NAME='Release-1'
       RELEASE_STRING='Release*'
-      if [ "$BRANCH_NAME" = "RELEASE_STRING" ]; then
-        echo "Value is either 'value' or 'other'"
+      if [ "$BRANCH_NAME" = "$RELEASE_STRING" ]; then
+        echo "This is a Release Branch"
+      else
+        echo "This is a NON Release Branch"
       fi
+
