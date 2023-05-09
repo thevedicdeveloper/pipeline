@@ -19,6 +19,6 @@ phases:
       bash --version
       BRANCH_NAME='Release-1'
       RELEASE_STRING='Release*'
-      if [ "$VAR" = "value" ] || [ "$VAR" = "other" ]; then
+      if [ "$BRANCH_NAME" = "RELEASE_STRING" ]; then
         echo "Value is either 'value' or 'other'"
       fi
