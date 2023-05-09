@@ -16,9 +16,8 @@ phases:
     - export BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -d / -f 2)
     - |
       #!/bin/bash
-      bash --version
       BRANCH_NAME='Release-1'
-      RELEASE_STRING='Release*'
+      RELEASE_STRING='^Release'
       if [ "$BRANCH_NAME" = "$RELEASE_STRING" ]; then
         echo "This is a Release Branch"
       else
